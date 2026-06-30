@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gire a roleta e ganhe sua condição especial — [NOME DO PRODUTO]</title>
+<meta name="description" content="Gire a roleta e garanta uma condição especial em [NOME DO PRODUTO/CURSO].">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/instrutor-placeholder.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- ════════════════════════════════════════════════
+     CONFIG — tudo que muda por cliente está aqui.
+     Ver REPLICAR.md para o passo a passo completo.
+     ════════════════════════════════════════════════ -->
+<script>
+window.ROLETA_CONFIG = {
+  FB_PIXEL_ID: '',                 // opcional — preencher se for usar Pixel direto
+  GTM_ID:      '',                 // ex: 'GTM-XXXXXXX' — Google Tag Manager do cliente
+
+  TENTATIVAS: 3,
+
+  // peso = chance relativa de cair | rank = atratividade (mantém o melhor prêmio entre as tentativas)
+  PREMIOS: {
+    premio1: { label: 'PRÊMIO 1', peso: 35, rank: 4, checkout: 'https://exemplo.com/checkout?off=premio1' },
+    premio2: { label: 'PRÊMIO 2', peso: 35, rank: 3, checkout: 'https://exemplo.com/checkout?off=premio2' },
+    premio3: { label: 'PRÊMIO 3', peso: 15, rank: 2, checkout: 'https://exemplo.com/checkout?off=premio3' },
+    premio4: { label: 'PRÊMIO 4', peso: 15, rank: 1, checkout: 'https://exemplo.com/checkout?off=premio4' }
+  },
+
+  // 8 gomos = 4 prêmios alternados (mantenha sempre N par, com cada prêmio repetido ao menos 2x e intercalado)
+  GOMOS: ['premio1','premio2','premio4','premio3','premio1','premio2','premio4','premio3']
+};
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  /* ── CORES DA MARCA — trocar aqui para a identidade do cliente ── */
+  --gold:#D4AF37; --gold-dk:#B8860B; --gold-lt:#E5C45A;
+  --bg:#FFFFFF; --bg2:#FAFAFA; --bg3:#F7F7F7;
+  --border:#EAEAEA;
+  --text:#1A1A1A; --muted:#666666; --green:#1F9D62;
+  --orange:#FF8A00;
+}
+html{ scroll-behavior:smooth; }
+body{
+  background: radial-gradient(1100px 650px at 50% -8%, #FFFBF0 0%, #FFFFFF 55%) fixed, var(--bg);
+  color:var(--text); font-family:'Inter',sans-serif; line-height:1.55;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:28px 18px 48px; overflow-x:hidden;
+}
+.topbar{
+  font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--gold-dk); background:rgba(212,175,55,0.10);
+  border:1px solid rgba(212,175,55,0.30); border-radius:999px;
+  padding:7px 16px; margin-bottom:24px; text-align:center;
+}
+.hero{ text-align:center; max-width:640px; }
+.hero h1{
+  font-family:'Sora',sans-serif; font-weight:900; letter-spacing:-0.02em;
+  font-size:clamp(26px,5.5vw,40px); line-height:1.1;
+}
+.hero h1 em{ font-style:normal; color:var(--gold-dk); }
+.hero p{ color:var(--muted); font-size:clamp(14px,2.4vw,16px); margin-top:14px; }
+.hero p strong{ color:var(--text); }
+.chances{
+  position:relative; z-index:5;                 /* na frente do glow laranja */
+  display:inline-flex; align-items:center; gap:8px; margin-top:18px;
+  font-size:13px; font-weight:600; color:var(--gold-dk);
+  background:#FFF7E2; border:1px solid rgba(212,175,55,0.45);
+  border-radius:999px; padding:8px 16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ── ROLETA ── */
+.wheel-stage{ position:relative; width:min(88vw,400px); aspect-ratio:1; margin:40px auto 10px;
+  display:flex; align-items:center; justify-content:center; }
+/* luz de fundo laranja */
+.glow{
+  position:absolute; inset:-20%; z-index:0; border-radius:50%; pointer-events:none;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,140,0,0.42) 0%, rgba(255,118,0,0.22) 48%, rgba(255,110,0,0.06) 66%, rgba(255,110,0,0) 78%);
+  filter: blur(26px);
+}
+.pointer{
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%); z-index:6;
+  width:0; height:0; border-left:17px solid transparent; border-right:17px solid transparent;
+  border-top:30px solid #2b2110; filter:drop-shadow(0 3px 4px rgba(0,0,0,0.45));
+}
+.pointer::after{
+  content:''; position:absolute; top:-30px; left:-12px;
+  width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent;
+  border-top:22px solid var(--gold-lt);
+}
+.wheel{
+  position:relative; z-index:1; width:100%; height:100%; display:block; border-radius:50%;
+  transform:rotate(0deg);
+  transition:transform 5.2s cubic-bezier(.17,.67,.18,1);
+  filter: drop-shadow(0 16px 34px rgba(120,60,0,0.34));
+}
+.wheel.no-anim{ transition:none; }
+.hub{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:5;
+  width:70px; height:70px; border-radius:50%;
+  background:radial-gradient(circle at 38% 32%, #FFFDF4, #F0DFA6 60%, #D4AF37 100%);
+  border:3px solid #7a5d18;
+  box-shadow:0 4px 14px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.7);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Sora',sans-serif; font-weight:900; color:#2b2110;
+  line-height:1.05; text-align:center;
+}
+.hub b{ font-size:13px; letter-spacing:-0.02em; }
+.hub small{ font-size:8px; font-weight:800; letter-spacing:0.04em; color:#5a451a; }
+
+/* ── BOTÃO GIRAR ── */
+.btn-spin{
+  margin-top:26px; min-width:min(86vw,380px);
+  background:linear-gradient(180deg,var(--gold-lt),var(--gold)); color:#1A1A1A;
+  border:none; border-radius:14px; padding:17px 26px;
+  font-family:'Inter',sans-serif; font-size:16px; font-weight:800; letter-spacing:0.01em;
+  cursor:pointer; transition:transform .08s, box-shadow .2s, opacity .2s;
+  box-shadow:0 10px 26px rgba(212,175,55,0.30);
+}
+.btn-spin:hover{ box-shadow:0 12px 30px rgba(212,175,55,0.42); }
+.btn-spin:active{ transform:scale(0.985); }
+.btn-spin:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
+
+.footnote{ margin-top:22px; font-size:12px; color:#9b9b9b; text-align:center; max-width:420px; }
+
+/* ── INSTRUTOR ── */
+.instrutor{
+  margin-top:38px; width:min(92vw,560px);
+  background:var(--bg2);
+  border:1px solid var(--border); border-radius:20px;
+  padding:8px 22px 8px 8px; display:flex; align-items:center; gap:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+.instrutor img{ width:118px; height:auto; display:block; flex-shrink:0; filter:drop-shadow(0 6px 10px rgba(0,0,0,0.18)); }
+.instrutor .eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-dk); }
+.instrutor h3{ font-family:'Sora',sans-serif; font-weight:800; font-size:18px; margin:3px 0 5px; }
+.instrutor p{ font-size:13px; color:var(--muted); line-height:1.5; }
+
+/* ── MODAL RESULTADO ── */
+.overlay{
+  position:fixed; inset:0; z-index:50; background:rgba(20,18,10,0.55);
+  backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.overlay.open{ display:flex; }
+.modal{
+  background:var(--bg);
+  border:1px solid rgba(212,175,55,0.35); border-radius:22px;
+  padding:34px 28px; max-width:420px; width:100%; text-align:center;
+  animation:pop .28s cubic-bezier(.2,.9,.3,1.2);
+  box-shadow:0 24px 70px rgba(0,0,0,0.22);
+}
+@keyframes pop{ from{ opacity:0; transform:translateY(18px) scale(.96); } to{ opacity:1; transform:none; } }
+.modal .emoji{ font-size:46px; line-height:1; }
+.modal .win-label{
+  font-family:'Sora',sans-serif; font-weight:900; letter-spacing:-0.02em;
+  font-size:34px; color:var(--gold-dk); margin:8px 0 4px;
+}
+.modal h3{ font-size:18px; font-weight:700; margin-bottom:6px; }
+.modal p{ color:var(--muted); font-size:14px; margin-bottom:24px; }
+.btn-claim{
+  width:100%; display:block; background:linear-gradient(180deg,var(--gold-lt),var(--gold));
+  color:#1A1A1A; text-decoration:none; border:none; border-radius:12px; padding:16px;
+  font-family:'Inter',sans-serif; font-size:16px; font-weight:800; cursor:pointer;
+  box-shadow:0 10px 26px rgba(212,175,55,0.3); transition:transform .08s;
+}
+.btn-claim:active{ transform:scale(0.985); }
+.btn-again{
+  width:100%; margin-top:12px; background:transparent; border:1px solid var(--border);
+  color:var(--muted); border-radius:12px; padding:13px;
+  font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer;
+  transition:border-color .2s, color .2s;
+}
+.btn-again:hover{ border-color:var(--gold-dk); color:var(--gold-dk); }
+.btn-again[hidden]{ display:none; }
+
+@media (max-width:480px){
+  .instrutor{ flex-direction:column; text-align:center; padding:18px; gap:6px; }
+  .instrutor img{ width:150px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .wheel{ transition:transform 1.2s ease-out; } * { animation:none !important; }
+}
+</style>
+</head>
+<body>
+
+  <!-- TODO: nome do cliente/produto -->
+  <div class="topbar">⚡ [NOME DO PRODUTO] — [NOME DO CLIENTE]</div>
+
+  <header class="hero">
+    <!-- TODO: headline e subtítulo -->
+    <h1>Título de impacto sobre o <em>benefício principal</em></h1>
+    <p>Frase curta explicando a oferta e por que vale girar a roleta agora.</p>
+    <div class="chances">🎯 <span id="chances-txt">Você tem 3 chances. Gire agora.</span></div>
+  </header>
+
+  <div class="wheel-stage">
+    <div class="glow"></div>
+    <div class="pointer"></div>
+    <svg class="wheel no-anim" id="wheel" viewBox="0 0 300 300" aria-label="Roleta de prêmios"></svg>
+    <div class="hub"><b>LOGO</b><small>OU SELO</small></div>
+  </div>
+
+  <button class="btn-spin" id="btn-spin">🎰 Girar agora (<span id="left">3</span> tentativas)</button>
+
+  <p class="footnote">Os prêmios são condições promocionais por tempo limitado e válidos apenas durante esta ação. Imagens meramente ilustrativas.</p>
+
+  <!-- TODO: seção do instrutor/responsável — pode ser removida se não fizer sentido para o cliente -->
+  <section class="instrutor">
+    <img src="assets/instrutor-placeholder.svg" alt="Foto do responsável" loading="lazy" width="118">
+    <div>
+      <span class="eyebrow">Quem te ensina</span>
+      <h3>[Nome do responsável]</h3>
+      <p>Breve descrição de autoridade — quem é, por que confiar, o que essa pessoa vai entregar.</p>
+    </div>
+  </section>
+
+  <!-- MODAL RESULTADO -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="emoji">🎉</div>
+      <div class="win-label" id="win-label">—</div>
+      <h3>Parabéns, você ganhou!</h3>
+      <p>Garanta agora antes que sua condição expire.</p>
+      <a class="btn-claim" id="btn-claim" href="#">Garantir minha vaga →</a>
+      <button class="btn-again" id="btn-again">🔄 Girar de novo (<span id="again-left">2</span> restantes)</button>
+    </div>
+  </div>
+
+<!-- ════════════════════════════════════════════════
+     MOTOR DA ROLETA — não precisa mexer aqui para
+     replicar para um novo cliente. Ver REPLICAR.md.
+     ════════════════════════════════════════════════ -->
+<script>
+(function(){
+  "use strict";
+  var CFG = window.ROLETA_CONFIG;
+  var PREMIOS = CFG.PREMIOS, GOMOS = CFG.GOMOS, N = GOMOS.length;
+  var SEG = 360 / N;
+
+  // ── 1. Tracking (Pixel + GTM) opcional ──
+  function track(ev, data){
+    try { if (window.fbq) fbq('track', ev, data||{}); } catch(e){}
+    try { if (window.dataLayer) window.dataLayer.push(Object.assign({event:ev}, data||{})); } catch(e){}
+  }
+  (function initTracking(){
+    if (CFG.FB_PIXEL_ID){
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+      (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', CFG.FB_PIXEL_ID); fbq('track','PageView');
+    }
+    if (CFG.GTM_ID){
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',CFG.GTM_ID);
+    }
+  })();
+
+  // ── 2. Geometria — ângulo horário a partir do topo (0 = topo/ponteiro) ──
+  function pt(angDeg, r){
+    var a = angDeg * Math.PI/180;
+    return { x: 150 + r*Math.sin(a), y: 150 - r*Math.cos(a) };
+  }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];}); }
+
+  // Parâmetros do desenho
+  var R_DISC = 149;   // raio externo (aro metálico)
+  var R_SEG  = 126;   // raio dos gomos (aro = 126..149)
+  var R_BULB = 137.5; // raio das bolinhas (no meio do aro)
+  var N_BULB = 16;    // qtd de bolinhas
+  var R_OUT  = 116;   // ponta externa dos rótulos (colada na borda, p/ todos)
+  var SPAN   = 74;    // largura radial máx. de um rótulo (uniformiza a fonte)
+  var BASE   = 12;    // fonte base (rótulos)
+
+  function drawWheel(){
+    var svg = document.getElementById('wheel'), parts = '';
+
+    // defs (gradientes metálicos)
+    parts +=
+      '<defs>'+
+        '<linearGradient id="gGold" x1="0.15" y1="0" x2="0.85" y2="1">'+
+          '<stop offset="0" stop-color="#F6DC6A"/><stop offset="0.5" stop-color="#D4AF37"/><stop offset="1" stop-color="#8E6E1B"/>'+
+        '</linearGradient>'+
+        '<linearGradient id="gDark" x1="0.15" y1="0" x2="0.85" y2="1">'+
+          '<stop offset="0" stop-color="#473714"/><stop offset="0.5" stop-color="#221a0c"/><stop offset="1" stop-color="#0f0b05"/>'+
+        '</linearGradient>'+
+        '<radialGradient id="gRim" cx="0.5" cy="0.38" r="0.62">'+
+          '<stop offset="0" stop-color="#8a6b22"/><stop offset="0.5" stop-color="#3c2d12"/><stop offset="1" stop-color="#151007"/>'+
+        '</radialGradient>'+
+        '<radialGradient id="gBulb" cx="0.4" cy="0.35" r="0.75">'+
+          '<stop offset="0" stop-color="#FFFBE8"/><stop offset="0.45" stop-color="#F4D85C"/><stop offset="1" stop-color="#9C7A1E"/>'+
+        '</radialGradient>'+
+      '</defs>';
+
+    // aro metálico
+    parts += '<circle cx="150" cy="150" r="'+R_DISC+'" fill="url(#gRim)"/>';
+
+    // gomos
+    for (var i=0;i<N;i++){
+      var a0=i*SEG, a1=(i+1)*SEG;
+      var p0=pt(a0,R_SEG), p1=pt(a1,R_SEG);
+      var fillSeg = (i%2===0) ? 'url(#gGold)' : 'url(#gDark)';
+      parts += '<path d="M150,150 L'+p0.x.toFixed(2)+','+p0.y.toFixed(2)+
+               ' A'+R_SEG+','+R_SEG+' 0 0 1 '+p1.x.toFixed(2)+','+p1.y.toFixed(2)+' Z" '+
+               'fill="'+fillSeg+'" stroke="#7a5d18" stroke-width="1"/>';
+    }
+
+    // brilho metálico (sheen) no topo
+    parts += '<ellipse cx="150" cy="104" rx="120" ry="74" fill="#ffffff" opacity="0.07"/>';
+
+    // anel dourado separando gomos do aro
+    parts += '<circle cx="150" cy="150" r="'+R_SEG+'" fill="none" stroke="#C9A33A" stroke-width="2.5"/>';
+
+    // bolinhas (luzes)
+    for (var b=0;b<N_BULB;b++){
+      var bp = pt(b*(360/N_BULB), R_BULB);
+      parts += '<circle cx="'+bp.x.toFixed(2)+'" cy="'+bp.y.toFixed(2)+'" r="6.4" fill="#F4D85C" opacity="0.30"/>'+
+               '<circle cx="'+bp.x.toFixed(2)+'" cy="'+bp.y.toFixed(2)+'" r="3.5" fill="url(#gBulb)" stroke="#6e5417" stroke-width="0.7"/>';
+    }
+
+    // borda externa (fio dourado)
+    parts += '<circle cx="150" cy="150" r="'+(R_DISC-0.8)+'" fill="none" stroke="#caa53d" stroke-width="1.4" opacity="0.7"/>';
+
+    // rótulos — linha única; quebra em 2 linhas (e reduz) o que não couber em SPAN
+    for (var j=0;j<N;j++){
+      var mid = j*SEG + SEG/2, prm = PREMIOS[GOMOS[j]];
+      var lines = wrap(prm.label), t;
+      var widest = 0; for (t=0;t<lines.length;t++) widest = Math.max(widest, measure(lines[t], 100));
+      var fs = Math.min(BASE, 100 * SPAN / widest);
+      if (lines.length > 1) fs = Math.min(fs, BASE * 0.84); // rótulo quebrado fica menor
+      var Lw = 0; for (t=0;t<lines.length;t++) Lw = Math.max(Lw, measure(lines[t], fs));
+      var p = pt(mid, R_OUT - Lw/2);                         // ponta externa da linha mais larga em R_OUT
+      var fill = (j%2===0) ? '#1A1A1A' : '#F4D85C';          // gomo dourado→ink, escuro→dourado
+      var inner = (lines.length > 1)
+        ? '<tspan x="'+p.x.toFixed(2)+'" dy="-0.56em">'+esc(lines[0])+'</tspan>'+
+          '<tspan x="'+p.x.toFixed(2)+'" dy="1.12em">'+esc(lines[1])+'</tspan>'
+        : esc(lines[0]);
+      parts += '<text x="'+p.x.toFixed(2)+'" y="'+p.y.toFixed(2)+'" '+
+               'fill="'+fill+'" font-family="Inter,sans-serif" font-weight="800" font-size="'+fs.toFixed(2)+'" '+
+               'letter-spacing="0.2" text-anchor="middle" dominant-baseline="middle" '+
+               'transform="rotate('+mid.toFixed(2)+','+p.x.toFixed(2)+','+p.y.toFixed(2)+')">'+
+               inner+'</text>';
+    }
+
+    svg.innerHTML = parts;
+  }
+
+  // Mede o texto via canvas (confiável; getComputedTextLength às vezes retorna 0).
+  // Largura em "px no tamanho fs" == unidades do viewBox no tamanho fs.
+  var measureCtx = document.createElement('canvas').getContext('2d');
+  function measure(text, fs){ measureCtx.font = '800 '+fs+'px Inter, sans-serif'; return measureCtx.measureText(text).width || 1; }
+
+  // Quebra em 2 linhas (no espaço central) quando não cabe em 1 linha dentro de SPAN.
+  function wrap(text){
+    if (measure(text, 14) <= SPAN) return [text];   // decisão num tamanho fixo (independe de BASE)
+    var sp = [], idx = text.indexOf(' ');
+    while (idx > -1){ sp.push(idx); idx = text.indexOf(' ', idx+1); }
+    if (!sp.length) return [text];
+    var m = text.length/2, best = sp[0];
+    for (var k=0;k<sp.length;k++) if (Math.abs(sp[k]-m) < Math.abs(best-m)) best = sp[k];
+    return [text.slice(0, best), text.slice(best+1)];
+  }
+
+  // ── 3. Sorteio direcionado por peso ──
+  function sortearGomo(){
+    var total = 0, k;
+    for (k in PREMIOS) total += PREMIOS[k].peso;
+    var rnd = Math.random()*total, acc = 0, escolhido = null;
+    for (k in PREMIOS){ acc += PREMIOS[k].peso; if (rnd <= acc){ escolhido = k; break; } }
+    var idxs = []; for (var i=0;i<N;i++) if (GOMOS[i]===escolhido) idxs.push(i);
+    return idxs[Math.floor(Math.random()*idxs.length)];
+  }
+
+  // ── 4. Estado e giro ──
+  var tentativasTotais = CFG.TENTATIVAS || 3;
+  var usadas = 0, girando = false, rotAcc = 0, melhor = null;
+
+  var elWheel = document.getElementById('wheel');
+  var btnSpin = document.getElementById('btn-spin');
+  var elLeft = document.getElementById('left');
+  var overlay = document.getElementById('overlay');
+  var btnAgain = document.getElementById('btn-again');
+  var btnClaim = document.getElementById('btn-claim');
+
+  function restantes(){ return tentativasTotais - usadas; }
+
+  function girar(){
+    if (girando || restantes() <= 0) return;
+    girando = true; usadas++;
+    btnSpin.disabled = true;
+    overlay.classList.remove('open');
+
+    var gomo = sortearGomo();
+    var key = GOMOS[gomo], centro = gomo*SEG + SEG/2;
+    var alvo = (360 - (centro % 360)) % 360;
+    var jitter = (Math.random()-0.5) * (SEG*0.5);
+    var voltas = 6;
+    rotAcc += voltas*360 + (alvo - (rotAcc % 360) + 360) % 360 + jitter;
+
+    elWheel.classList.remove('no-anim');
+    elWheel.style.transform = 'rotate(' + rotAcc + 'deg)';
+
+    track('SpinWheel', { tentativa: usadas });
+
+    setTimeout(function(){
+      girando = false;
+      if (!melhor || PREMIOS[key].rank > PREMIOS[melhor.key].rank){
+        melhor = { key:key, gomo:gomo };
+      }
+      mostrarResultado();
+    }, 5300);
+  }
+
+  function mostrarResultado(){
+    var prm = PREMIOS[melhor.key];
+    document.getElementById('win-label').textContent = prm.label;
+    btnClaim.href = montarDestino(prm.checkout);
+    elLeft.textContent = restantes();
+    btnSpin.disabled = restantes() <= 0;
+
+    if (restantes() > 0){
+      btnAgain.hidden = false;
+      document.getElementById('again-left').textContent = restantes();
+    } else {
+      btnAgain.hidden = true;
+    }
+    document.getElementById('chances-txt').textContent =
+      restantes() > 0 ? ('Você ainda tem ' + restantes() + ' chance(s).') : 'Tentativas encerradas.';
+    overlay.classList.add('open');
+    track('SpinResult', { premio: melhor.key, label: prm.label });
+  }
+
+  // ── 5. Destino: mantém o sck do prêmio e repassa só os UTMs do anúncio ──
+  function montarDestino(base){
+    if (!base) return '#';
+    var inc = new URLSearchParams(window.location.search);
+    inc.delete('sck'); inc.delete('src');
+    var extra = inc.toString();
+    if (!extra) return base;
+    return base + (base.indexOf('?') >= 0 ? '&' : '?') + extra;
+  }
+
+  // ── 6. Eventos ──
+  btnSpin.addEventListener('click', girar);
+  btnAgain.addEventListener('click', function(){ overlay.classList.remove('open'); girar(); });
+  btnClaim.addEventListener('click', function(e){
+    if (btnClaim.getAttribute('href') === '#'){ e.preventDefault(); return; }
+    track('ClaimPrize', { premio: melhor.key });
+  });
+
+  // ── init ──
+  drawWheel();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawWheel); // remede com a fonte carregada
+  elLeft.textContent = restantes();
+  document.getElementById('chances-txt').textContent = 'Você tem ' + restantes() + ' chances. Gire agora.';
+})();
+</script>
+</body>
+</html>
