@@ -448,6 +448,7 @@ body{
   var btnClaimNaoAluna = document.getElementById('btn-claim-naoaluna');
 
   function restantes(){ return tentativasTotais - usadas; }
+  function chanceTxt(n){ return n + (n === 1 ? ' chance' : ' chances'); }
 
   function girar(){
     if (girando || restantes() <= 0) return;
@@ -501,7 +502,7 @@ body{
       btnAgain.hidden = true;
     }
     document.getElementById('chances-txt').textContent =
-      restantes() > 0 ? ('Você ainda tem ' + restantes() + ' chance(s).') : 'Tentativas encerradas.';
+      restantes() > 0 ? ('Você ainda tem ' + chanceTxt(restantes()) + '.') : 'Tentativas encerradas.';
     overlay.classList.add('open');
     track('SpinResult', { premio: melhor.key, label: prm.label });
   }
@@ -536,7 +537,7 @@ body{
   drawWheel();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawWheel); // remede com a fonte carregada
   elLeft.textContent = restantes();
-  document.getElementById('chances-txt').textContent = 'Você tem ' + restantes() + ' chance(s). Gire agora.';
+  document.getElementById('chances-txt').textContent = 'Você tem ' + chanceTxt(restantes()) + '. Gire agora.';
 })();
 </script>
 </body>
