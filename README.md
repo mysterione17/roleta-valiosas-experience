@@ -15,12 +15,26 @@ Um único arquivo `index.html` autocontido (HTML + CSS + JS inline, zero depend�
 
 ```
 página da roleta/
-├── index.html              # a página (motor + config + conteúdo, tudo num arquivo)
+├── index.html              # FONTE — a página legível (motor + config + conteúdo), é este arquivo que se edita
+├── build.sh                 # gera docs/ a partir do index.html (minifica + ofusca)
+├── docs/                    # PUBLICADO — gerado pelo build.sh, é o que o GitHub Pages serve (não editar à mão)
 ├── assets/
 │   └── instrutor-placeholder.svg   # placeholder — trocar pela foto real do cliente
 ├── README.md                # este arquivo
 └── REPLICAR.md               # passo a passo para customizar para um novo cliente
 ```
+
+## Publicar uma atualização
+
+Depois de editar o `index.html` (fonte), gerar a versão publicada:
+
+```bash
+bash build.sh
+```
+
+Isso minifica e ofusca o HTML/CSS/JS (nomes de função/variável viram letras soltas, sem espaços/comentários) e copia os assets pra dentro de `docs/`, que é a pasta configurada no GitHub Pages. Sempre commitar `index.html` **e** `docs/` juntos.
+
+Isso é só um dificultador contra cópia casual via "Ver código-fonte"/"Inspecionar elemento" — não existe forma de esconder de verdade código que roda no navegador do visitante. Os dados de configuração (links de checkout, pesos dos prêmios) continuam tecnicamente visíveis no HTML entregue, pois o navegador precisa deles pra rodar a roleta.
 
 ## Visualizar localmente
 
