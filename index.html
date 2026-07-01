@@ -62,8 +62,8 @@ window.ROLETA_CONFIG = {
 html{ scroll-behavior:smooth; }
 body{
   background:
-    linear-gradient(rgba(10,33,82,0.90), rgba(10,33,82,0.94)),
-    url('assets/hero-bg.webp') center/cover fixed, var(--bg);
+    linear-gradient(rgba(10,33,82,0.55), rgba(10,33,82,0.72)),
+    url('assets/hero-bg-capture.png') center/cover fixed, var(--bg);
   color:var(--text); font-family:'Poppins',sans-serif; line-height:1.55;
   -webkit-font-smoothing:antialiased; min-height:100vh;
   display:flex; flex-direction:column; align-items:center;
@@ -117,14 +117,13 @@ body{
 .wheel.no-anim{ transition:none; }
 .hub{
   position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:5;
-  width:70px; height:70px; border-radius:50%;
+  width:82px; height:82px; border-radius:50%;
   background:radial-gradient(circle at 38% 32%, #FFFDF4, #F0DFA6 60%, #D4AF37 100%);
   border:3px solid var(--navy-deep);
   box-shadow:0 4px 14px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.7);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-family:'Poppins',sans-serif; font-weight:800; color:var(--navy-deep);
-  line-height:1.05; text-align:center;
+  display:flex; align-items:center; justify-content:center;
 }
+.hub img{ width:62px; height:auto; display:block; }
 .hub b{ font-size:10px; letter-spacing:-0.01em; }
 .hub small{ font-size:8px; font-weight:700; letter-spacing:0.04em; color:#5a451a; }
 
@@ -171,7 +170,6 @@ body{
   box-shadow:0 24px 70px rgba(0,0,0,0.45);
 }
 @keyframes pop{ from{ opacity:0; transform:translateY(18px) scale(.96); } to{ opacity:1; transform:none; } }
-.modal .emoji{ font-size:46px; line-height:1; }
 .modal .win-label{
   font-family:'Poppins',sans-serif; font-weight:800; letter-spacing:-0.01em;
   font-size:32px; color:var(--gold); margin:8px 0 4px;
@@ -212,22 +210,22 @@ body{
 </head>
 <body>
 
-  <div class="topbar"><img src="assets/logo-valiosas-experience.webp" alt="Valiosas Experience 2026"></div>
+  <div class="topbar"><img src="assets/logo-valiosas-full.png" alt="Valiosas Experience 2026"></div>
 
   <header class="hero">
     <h1>Gire a roleta e garanta um <em>desconto exclusivo</em> no seu ingresso</h1>
     <p>Sua chance de entrar no Valiosas Experience 2026 pagando menos. Gire agora e descubra sua condição especial.</p>
-    <div class="chances">🎯 <span id="chances-txt">Você tem 1 chance. Gire agora.</span></div>
+    <div class="chances"><span id="chances-txt">Você tem 1 chance. Gire agora.</span></div>
   </header>
 
   <div class="wheel-stage">
     <div class="glow"></div>
     <div class="pointer"></div>
     <svg class="wheel no-anim" id="wheel" viewBox="0 0 300 300" aria-label="Roleta de prêmios"></svg>
-    <div class="hub"><b>VALIOSAS</b><small>2026</small></div>
+    <div class="hub"><img src="assets/simbolo-valiosas.png" alt="Símbolo Valiosas Experience"></div>
   </div>
 
-  <button class="btn-spin" id="btn-spin">🎰 Girar agora (<span id="left">1</span> tentativa)</button>
+  <button class="btn-spin" id="btn-spin">Girar agora (<span id="left">1</span> tentativa)</button>
 
   <p class="footnote">Os prêmios são condições promocionais por tempo limitado e válidos apenas durante esta ação. Vagas e preços sujeitos à disponibilidade.</p>
 
@@ -243,7 +241,6 @@ body{
   <!-- MODAL RESULTADO -->
   <div class="overlay" id="overlay">
     <div class="modal">
-      <div class="emoji">🎉</div>
       <div class="win-label" id="win-label">—</div>
       <h3>Parabéns, você ganhou!</h3>
       <p>Garanta agora antes que sua condição expire.</p>
@@ -258,7 +255,7 @@ body{
         <a class="btn-claim btn-claim-alt" id="btn-claim-naoaluna" href="#">Não sou aluna — resgatar meu ingresso →</a>
       </div>
 
-      <button class="btn-again" id="btn-again">🔄 Girar de novo (<span id="again-left">2</span> restantes)</button>
+      <button class="btn-again" id="btn-again">Girar de novo (<span id="again-left">2</span> restantes)</button>
     </div>
   </div>
 
@@ -319,9 +316,9 @@ body{
   var R_SEG  = 126;   // raio dos gomos (aro = 126..149)
   var R_BULB = 137.5; // raio das bolinhas (no meio do aro)
   var N_BULB = 16;    // qtd de bolinhas
-  var R_OUT  = 112;   // ponta externa dos rótulos (colada na borda, p/ todos)
-  var SPAN   = 64;    // largura radial máx. de um rótulo (uniformiza a fonte)
-  var BASE   = 12;    // fonte base (rótulos)
+  var R_OUT  = 119;   // ponta externa dos rótulos (colada na borda, p/ todos)
+  var SPAN   = 68;    // largura radial máx. de um rótulo (uniformiza a fonte)
+  var BASE   = 13;    // fonte base (rótulos)
   var FS_MIN = 6.5;   // fonte mínima (abaixo disso, rótulo é truncado em vez de espremido)
 
   function drawWheel(){
