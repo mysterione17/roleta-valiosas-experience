@@ -26,19 +26,16 @@ window.ROLETA_CONFIG = {
 
   // peso = chance relativa de cair | rank = atratividade (mantém o melhor prêmio entre as tentativas)
   // label = texto completo (modal de resultado) | gomoLabel = versão curta exibida no gomo da roleta (opcional; se omitido, usa `label`)
-  // checkout = link único (prêmio de preço fixo) | checkoutAluna/checkoutNaoAluna = pergunta "é aluna?" no resultado
+  // checkout = link único do prêmio (aqui: WhatsApp com mensagem pronta) | checkoutAluna/checkoutNaoAluna = pergunta "é aluna?" no resultado (não usado nesta campanha)
   PREMIOS: {
     duasEssence:    { label: '2 ESSENCE PELO PREÇO DE 1', gomoLabel: '2X1 ESSENCE',        peso: 40, rank: 1,
-                       checkoutAluna:    'https://pay.voompcreators.com.br/13800/offer/qSWXyQ',
-                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13801/offer/7Sb8m0' },
+                       checkout: 'https://wa.me/5549999992504?text=Oii%2C%20estou%20na%20p%C3%A1gina%20do%20valiosas%20experience%20e%20quero%20meus%20ingressos%202%20essence%20pelo%20pre%C3%A7o%20de%201!' },
     essence97:      { label: 'ESSENCE POR R$97',                              peso: 30, rank: 2,
-                       checkout:         'https://pay.voompcreators.com.br/13801/offer/yqMMk2' },
+                       checkout: 'https://wa.me/5549999992504?text=Oii%2C%20estou%20na%20p%C3%A1gina%20do%20valiosas%20experience%20e%20quero%20meu%20essence%20por%20R%2497!' },
     firstClass500:  { label: 'FIRST CLASS COM R$500 DE DESCONTO', gomoLabel: 'FIRST CLASS R$500 OFF', peso: 20, rank: 3,
-                       checkoutAluna:    'https://pay.voompcreators.com.br/13802/offer/F5tXv6',
-                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13803/offer/bXfuAx' },
+                       checkout: 'https://wa.me/5549999992504?text=Oii%2C%20estou%20na%20p%C3%A1gina%20do%20valiosas%20experience%20e%20quero%20meu%20FIRST%20CLASS%20com%20R%24500%20DE%20DESCONTO!' },
     firstClass50:   { label: '50% OFF FIRST CLASS',                           peso: 10, rank: 4,
-                       checkoutAluna:    'https://pay.voompcreators.com.br/13802/offer/V8XfDl',
-                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13803/offer/lyNwhr' }
+                       checkout: 'https://wa.me/5549999992504?text=Oii%2C%20estou%20na%20p%C3%A1gina%20do%20valiosas%20experience%20e%20quero%20meu%2050%25%20off%20no%20first%20class!' }
   },
 
   // 8 gomos = 4 prêmios alternados (mantenha sempre N par, com cada prêmio repetido ao menos 2x e intercalado)
@@ -143,18 +140,26 @@ body{
 
 .footnote{ margin-top:22px; font-size:12px; color:var(--muted); text-align:center; max-width:420px; }
 
-/* ── INSTRUTOR ── */
-.instrutor{
-  margin-top:38px; width:min(92vw,560px);
-  background:var(--bg2);
-  border:1px solid var(--border); border-radius:8px;
-  padding:8px 22px 8px 8px; display:flex; align-items:center; gap:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
+/* ── VÍDEO DO EVENTO ── */
+.video-sec{
+  margin-top:38px; width:min(92vw,560px); text-align:center;
 }
-.instrutor img{ width:118px; height:auto; display:block; flex-shrink:0; border-radius:6px; object-fit:cover; filter:drop-shadow(0 6px 10px rgba(0,0,0,0.3)); }
-.instrutor .eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); }
-.instrutor h3{ font-family:'Poppins',sans-serif; font-weight:700; font-size:18px; margin:3px 0 5px; color:#FFFFFF; }
-.instrutor p{ font-size:13px; color:var(--muted); line-height:1.5; }
+.video-sec .eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); }
+.video-sec h3{ font-family:'Poppins',sans-serif; font-weight:700; font-size:clamp(16px,3.4vw,20px); margin:6px 0 16px; color:#FFFFFF; }
+.video-frame{
+  position:relative; width:100%; aspect-ratio:16/9;
+  border:1px solid rgba(237,200,105,0.35); border-radius:8px; overflow:hidden;
+  box-shadow:0 14px 40px rgba(0,0,0,0.4); background:#000;
+}
+.video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+.btn-info{
+  display:inline-block; margin-top:18px; text-decoration:none;
+  background:var(--green); color:#FFFFFF; border-radius:var(--radius);
+  padding:15px 30px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:700;
+  box-shadow:0 10px 26px rgba(13,169,3,0.35); transition:transform .08s, box-shadow .2s;
+}
+.btn-info:hover{ box-shadow:0 12px 30px rgba(13,169,3,0.5); }
+.btn-info:active{ transform:scale(0.985); }
 
 /* ── MODAL RESULTADO ── */
 .overlay{
@@ -200,10 +205,6 @@ body{
 .btn-again:hover{ border-color:var(--gold); color:var(--gold); }
 .btn-again[hidden]{ display:none; }
 
-@media (max-width:480px){
-  .instrutor{ flex-direction:column; text-align:center; padding:18px; gap:6px; }
-  .instrutor img{ width:150px; }
-}
 @media (prefers-reduced-motion: reduce){
   .wheel{ transition:transform 1.2s ease-out; } * { animation:none !important; }
 }
@@ -230,13 +231,17 @@ body{
 
   <p class="footnote">Os prêmios são condições promocionais por tempo limitado e válidos apenas durante esta ação. Vagas e preços sujeitos à disponibilidade.</p>
 
-  <section class="instrutor">
-    <img src="assets/gabriela-fachini.jpg" alt="Foto de Gabriela Fachini" loading="lazy" width="118">
-    <div>
-      <span class="eyebrow">Quem te ensina</span>
-      <h3>Gabriela Fachini</h3>
-      <p>Fisioterapeuta e esteticista cosmetóloga, especialista em depilação a laser há mais de 8 anos. Mais de 7 mil atendimentos realizados e mentora de mais de 1.300 alunas, com um método próprio que entrega resultados desde a primeira sessão, com menos risco de intercorrências.</p>
+  <section class="video-sec">
+    <span class="eyebrow">Valiosas Experience 2025</span>
+    <h3>Vivencie um pouco do que foi o Valiosas Experience 2025</h3>
+    <div class="video-frame">
+      <iframe src="https://www.youtube.com/embed/ziCI9UcgS4k?autoplay=1&controls=0&playsinline=1&showinfo=0"
+        title="Valiosas Experience 2025" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen loading="lazy"></iframe>
     </div>
+    <a class="btn-info" href="https://www.gabrielafachini.com.br/valiosas-experience26-informacoes" target="_blank" rel="noopener">
+      Ver mais informações do evento
+    </a>
   </section>
 
   <!-- MODAL RESULTADO -->
@@ -247,7 +252,7 @@ body{
       <p>Garanta agora antes que sua condição expire.</p>
 
       <!-- prêmio de preço fixo: link único -->
-      <a class="btn-claim" id="btn-claim" href="#" hidden>Resgatar meu ingresso →</a>
+      <a class="btn-claim" id="btn-claim" href="#" hidden>RESGATAR INGRESSO</a>
 
       <!-- prêmio com preço diferente para aluna/não aluna: pergunta antes do link -->
       <div class="aluna-choice" id="aluna-choice" hidden>
