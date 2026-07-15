@@ -7,8 +7,10 @@ cd "$(dirname "$0")"
 mkdir -p docs/assets
 cp assets/* docs/assets/
 
-npx --yes html-minifier-terser index.html \
-  --collapse-whitespace --remove-comments --minify-css true --minify-js true \
-  -o docs/index.html
-
-echo "docs/index.html gerado a partir de index.html."
+for page in index.html roleta-1/index.html roleta-2/index.html; do
+  mkdir -p "docs/$(dirname "$page")"
+  npx --yes html-minifier-terser "$page" \
+    --collapse-whitespace --remove-comments --minify-css true --minify-js true \
+    -o "docs/$page"
+  echo "docs/$page gerado a partir de $page."
+done

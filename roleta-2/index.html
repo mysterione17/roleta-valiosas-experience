@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gire a roleta e garanta sua condição especial — Valiosas Experience 2026</title>
+<meta name="description" content="Gire a roleta e garanta uma condição especial no seu ingresso para o Valiosas Experience 2026, com Gabriela Fachini.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- ════════════════════════════════════════════════
+     CONFIG — tudo que muda por cliente está aqui.
+     Ver REPLICAR.md para o passo a passo completo.
+     ════════════════════════════════════════════════ -->
+<script>
+window.ROLETA_CONFIG = {
+  FB_PIXEL_ID: '3169155536692463', // Meta Pixel da Gabriela
+  GTM_ID:      '',                 // não informado (o ID passado era do GA4, não do GTM — ver GA4_ID abaixo)
+  GA4_ID:      'G-JRVYSSH7P0',     // Google Analytics 4 (gtag.js direto)
+
+  TENTATIVAS: 1,
+
+  // peso = chance relativa de cair | rank = atratividade (mantém o melhor prêmio entre as tentativas)
+  // label = texto completo (modal de resultado) | gomoLabel = versão curta exibida no gomo da roleta (opcional; se omitido, usa `label`)
+  // checkout = link único (prêmio de preço fixo) | checkoutAluna/checkoutNaoAluna = pergunta "é aluna?" no resultado
+  PREMIOS: {
+    duasEssence:    { label: '2 ESSENCE PELO PREÇO DE 1', gomoLabel: '2X1 ESSENCE',        peso: 40, rank: 1,
+                       checkoutAluna:    'https://pay.voompcreators.com.br/13800/offer/qSWXyQ',
+                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13801/offer/7Sb8m0' },
+    essence97:      { label: 'ESSENCE POR R$97',                              peso: 30, rank: 2,
+                       checkout:         'https://pay.voompcreators.com.br/13801/offer/yqMMk2' },
+    firstClass500:  { label: 'FIRST CLASS COM R$500 DE DESCONTO', gomoLabel: 'FIRST CLASS R$500 OFF', peso: 20, rank: 3,
+                       checkoutAluna:    'https://pay.voompcreators.com.br/13802/offer/F5tXv6',
+                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13803/offer/bXfuAx' },
+    firstClass50:   { label: '50% OFF FIRST CLASS',                           peso: 10, rank: 4,
+                       checkoutAluna:    'https://pay.voompcreators.com.br/13802/offer/V8XfDl',
+                       checkoutNaoAluna: 'https://pay.voompcreators.com.br/13803/offer/lyNwhr' }
+  },
+
+  // 8 gomos = 4 prêmios alternados (mantenha sempre N par, com cada prêmio repetido ao menos 2x e intercalado)
+  GOMOS: ['duasEssence','firstClass50','essence97','firstClass500','duasEssence','firstClass50','essence97','firstClass500']
+};
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  /* ── CORES DA MARCA — extraídas de gabrielafachini.com.br/valiosas-experience-2026 ── */
+  --gold:#EDC869; --gold-dk:#A99003; --gold-lt:#F3DC9C;
+  --navy:#2F2C79; --navy-deep:#0A2152;
+  --bronze:#9B692C; --olive:#D4CC00;
+  --green:#0DA903;
+  --bg:#0A2152; --bg2:#2F2C79; --bg3:#F7F7F7;
+  --border:rgba(255,255,255,0.14);
+  --text:#FFFFFF; --muted:rgba(255,255,255,0.65);
+  --orange:#FF8A00;
+  --radius:3px;
+}
+html{ scroll-behavior:smooth; }
+body{
+  background:
+    linear-gradient(rgba(10,33,82,0.55), rgba(10,33,82,0.72)),
+    url('../assets/hero-bg-capture.png') center/cover fixed, var(--bg);
+  color:var(--text); font-family:'Poppins',sans-serif; line-height:1.55;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:28px 18px 48px; overflow-x:hidden;
+}
+.topbar{ margin-bottom:18px; text-align:center; }
+.topbar img{ width:170px; height:auto; display:block; margin:0 auto; }
+.hero{ text-align:center; max-width:640px; }
+.hero h1{
+  font-family:'Poppins',sans-serif; font-weight:400; letter-spacing:-0.01em;
+  font-size:clamp(24px,5.2vw,36px); line-height:1.25; color:var(--text);
+}
+.hero h1 em{ font-style:normal; font-weight:800; color:var(--text); }
+.hero p{ color:var(--olive); font-weight:500; font-size:clamp(14px,2.4vw,16px); margin-top:14px; }
+.hero p strong{ color:var(--text); }
+.chances{
+  position:relative; z-index:5;                 /* na frente do glow laranja */
+  display:inline-flex; align-items:center; gap:8px; margin-top:18px;
+  font-size:13px; font-weight:600; color:var(--gold);
+  background:rgba(255,255,255,0.08); border:1px solid rgba(237,200,105,0.35);
+  border-radius:999px; padding:8px 16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* ── ROLETA ── */
+.wheel-stage{ position:relative; width:min(94vw,460px); aspect-ratio:1; margin:40px auto 10px;
+  display:flex; align-items:center; justify-content:center; }
+/* luz de fundo dourada */
+.glow{
+  position:absolute; inset:-20%; z-index:0; border-radius:50%; pointer-events:none;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(237,200,105,0.38) 0%, rgba(237,200,105,0.18) 48%, rgba(237,200,105,0.05) 66%, rgba(237,200,105,0) 78%);
+  filter: blur(26px);
+}
+.pointer{
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%); z-index:6;
+  width:0; height:0; border-left:17px solid transparent; border-right:17px solid transparent;
+  border-top:30px solid var(--navy-deep); filter:drop-shadow(0 3px 4px rgba(0,0,0,0.45));
+}
+.pointer::after{
+  content:''; position:absolute; top:-30px; left:-12px;
+  width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent;
+  border-top:22px solid var(--gold-lt);
+}
+.wheel{
+  position:relative; z-index:1; width:100%; height:100%; display:block; border-radius:50%;
+  transform:rotate(0deg);
+  transition:transform 5.2s cubic-bezier(.17,.67,.18,1);
+  filter: drop-shadow(0 16px 34px rgba(0,0,0,0.45));
+}
+.wheel.no-anim{ transition:none; }
+.hub{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:5;
+  width:82px; height:82px; border-radius:50%;
+  background:radial-gradient(circle at 38% 32%, #FFFDF4, #F0DFA6 60%, #D4AF37 100%);
+  border:3px solid var(--navy-deep);
+  box-shadow:0 4px 14px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.7);
+  display:flex; align-items:center; justify-content:center;
+}
+.hub img{ width:62px; height:auto; display:block; }
+.hub b{ font-size:10px; letter-spacing:-0.01em; }
+.hub small{ font-size:8px; font-weight:700; letter-spacing:0.04em; color:#5a451a; }
+
+/* ── BOTÃO GIRAR (verde, igual ao CTA do site) ── */
+.btn-spin{
+  margin-top:26px; min-width:min(86vw,380px);
+  background:var(--green); color:#FFFFFF;
+  border:none; border-radius:var(--radius); padding:17px 26px;
+  font-family:'Poppins',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.01em;
+  cursor:pointer; transition:transform .08s, box-shadow .2s, opacity .2s;
+  box-shadow:0 10px 26px rgba(13,169,3,0.35);
+}
+.btn-spin:hover{ box-shadow:0 12px 30px rgba(13,169,3,0.5); }
+.btn-spin:active{ transform:scale(0.985); }
+.btn-spin:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
+
+.footnote{ margin-top:22px; font-size:12px; color:var(--muted); text-align:center; max-width:420px; }
+
+/* ── VÍDEO DO EVENTO ── */
+.video-sec{
+  margin-top:38px; width:min(92vw,560px); text-align:center;
+}
+.video-sec .eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); }
+.video-sec h3{ font-family:'Poppins',sans-serif; font-weight:700; font-size:clamp(16px,3.4vw,20px); margin:6px 0 16px; color:#FFFFFF; }
+.video-frame{
+  position:relative; width:100%; aspect-ratio:16/9;
+  border:1px solid rgba(237,200,105,0.35); border-radius:8px; overflow:hidden;
+  box-shadow:0 14px 40px rgba(0,0,0,0.4); background:#000;
+}
+.video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+.btn-info{
+  display:inline-block; margin-top:18px; text-decoration:none;
+  background:var(--green); color:#FFFFFF; border-radius:var(--radius);
+  padding:15px 30px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:700;
+  box-shadow:0 10px 26px rgba(13,169,3,0.35); transition:transform .08s, box-shadow .2s;
+}
+.btn-info:hover{ box-shadow:0 12px 30px rgba(13,169,3,0.5); }
+.btn-info:active{ transform:scale(0.985); }
+
+/* ── MODAL RESULTADO ── */
+.overlay{
+  position:fixed; inset:0; z-index:50; background:rgba(5,12,28,0.7);
+  backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.overlay.open{ display:flex; }
+.modal{
+  background:var(--bg2);
+  border:1px solid rgba(237,200,105,0.35); border-radius:8px;
+  padding:34px 28px; max-width:420px; width:100%; text-align:center;
+  animation:pop .28s cubic-bezier(.2,.9,.3,1.2);
+  box-shadow:0 24px 70px rgba(0,0,0,0.45);
+}
+@keyframes pop{ from{ opacity:0; transform:translateY(18px) scale(.96); } to{ opacity:1; transform:none; } }
+.modal .win-label{
+  font-family:'Poppins',sans-serif; font-weight:800; letter-spacing:-0.01em;
+  font-size:32px; color:var(--gold); margin:8px 0 4px;
+}
+.modal h3{ font-size:18px; font-weight:700; margin-bottom:6px; color:#FFFFFF; }
+.modal p{ color:var(--muted); font-size:14px; margin-bottom:24px; }
+.btn-claim{
+  width:100%; display:block; background:var(--green);
+  color:#FFFFFF; text-decoration:none; border:none; border-radius:var(--radius); padding:16px;
+  font-family:'Poppins',sans-serif; font-size:15px; font-weight:700; cursor:pointer;
+  box-shadow:0 10px 26px rgba(13,169,3,0.35); transition:transform .08s;
+}
+.btn-claim:active{ transform:scale(0.985); }
+.btn-claim[hidden]{ display:none; }
+.aluna-choice[hidden]{ display:none; }
+.aluna-choice .aluna-pergunta{ font-size:13px; font-weight:700; color:var(--gold); margin-bottom:10px; }
+.aluna-choice .btn-claim{ margin-bottom:10px; background:var(--gold-dk); box-shadow:0 10px 26px rgba(169,144,3,0.35); }
+.aluna-choice .btn-claim.btn-claim-alt{
+  background:var(--green); box-shadow:0 10px 26px rgba(13,169,3,0.35);
+}
+.btn-again{
+  width:100%; margin-top:12px; background:transparent; border:1px solid var(--border);
+  color:var(--muted); border-radius:var(--radius); padding:13px;
+  font-family:'Poppins',sans-serif; font-size:14px; font-weight:600; cursor:pointer;
+  transition:border-color .2s, color .2s;
+}
+.btn-again:hover{ border-color:var(--gold); color:var(--gold); }
+.btn-again[hidden]{ display:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .wheel{ transition:transform 1.2s ease-out; } * { animation:none !important; }
+}
+</style>
+</head>
+<body>
+
+  <div class="topbar"><img src="../assets/logo-valiosas-full.png" alt="Valiosas Experience 2026"></div>
+
+  <header class="hero">
+    <h1>Gire a roleta e garanta um <em>desconto exclusivo</em> no seu ingresso</h1>
+    <p>Sua chance de entrar no Valiosas Experience 2026 pagando menos. Gire agora e descubra sua condição especial.</p>
+    <div class="chances"><span id="chances-txt">Você tem 1 chance. Gire agora.</span></div>
+  </header>
+
+  <div class="wheel-stage">
+    <div class="glow"></div>
+    <div class="pointer"></div>
+    <svg class="wheel no-anim" id="wheel" viewBox="0 0 300 300" aria-label="Roleta de prêmios"></svg>
+    <div class="hub"><img src="../assets/simbolo-valiosas.png" alt="Símbolo Valiosas Experience"></div>
+  </div>
+
+  <button class="btn-spin" id="btn-spin">Girar agora (<span id="left">1</span> tentativa)</button>
+
+  <p class="footnote">Os prêmios são condições promocionais por tempo limitado e válidos apenas durante esta ação. Vagas e preços sujeitos à disponibilidade.</p>
+
+  <section class="video-sec">
+    <span class="eyebrow">Valiosas Experience 2025</span>
+    <h3>Vivencie um pouco do que foi o Valiosas Experience 2025</h3>
+    <div class="video-frame">
+      <iframe src="https://www.youtube.com/embed/ziCI9UcgS4k?autoplay=1&controls=0&playsinline=1&showinfo=0"
+        title="Valiosas Experience 2025" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen loading="lazy"></iframe>
+    </div>
+    <a class="btn-info" href="https://www.gabrielafachini.com.br/valiosas-experience26-informacoes" target="_blank" rel="noopener">
+      Ver mais informações do evento
+    </a>
+  </section>
+
+  <!-- MODAL RESULTADO -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="win-label" id="win-label">—</div>
+      <h3>Parabéns, você ganhou!</h3>
+      <p>Garanta agora antes que sua condição expire.</p>
+
+      <!-- prêmio de preço fixo: link único -->
+      <a class="btn-claim" id="btn-claim" href="#" hidden>RESGATAR INGRESSO</a>
+
+      <!-- prêmio com preço diferente para aluna/não aluna: pergunta antes do link -->
+      <div class="aluna-choice" id="aluna-choice" hidden>
+        <p class="aluna-pergunta">Você já é aluna da Gabriela?</p>
+        <a class="btn-claim" id="btn-claim-aluna" href="#">Sou aluna — resgatar meu ingresso →</a>
+        <a class="btn-claim btn-claim-alt" id="btn-claim-naoaluna" href="#">Não sou aluna — resgatar meu ingresso →</a>
+      </div>
+
+      <button class="btn-again" id="btn-again">Girar de novo (<span id="again-left">2</span> restantes)</button>
+    </div>
+  </div>
+
+<!-- ════════════════════════════════════════════════
+     MOTOR DA ROLETA — não precisa mexer aqui para
+     replicar para um novo cliente. Ver REPLICAR.md.
+     ════════════════════════════════════════════════ -->
+<script>
+(function(){
+  "use strict";
+  var CFG = window.ROLETA_CONFIG;
+  var PREMIOS = CFG.PREMIOS, GOMOS = CFG.GOMOS, N = GOMOS.length;
+  var SEG = 360 / N;
+
+  // ── 1. Tracking (Pixel + GTM) opcional ──
+  function track(ev, data){
+    try { if (window.fbq) fbq('track', ev, data||{}); } catch(e){}
+    try { if (window.dataLayer) window.dataLayer.push(Object.assign({event:ev}, data||{})); } catch(e){}
+    try { if (window.gtag) window.gtag('event', ev, data||{}); } catch(e){}
+  }
+  (function initTracking(){
+    if (CFG.FB_PIXEL_ID){
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+      (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', CFG.FB_PIXEL_ID); fbq('track','PageView');
+    }
+    if (CFG.GTM_ID){
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',CFG.GTM_ID);
+    }
+    if (CFG.GA4_ID){
+      // gtag.js direto (ID no formato G-XXXXXXXXXX) — diferente do GTM (GTM-XXXXXXX)
+      var gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + CFG.GA4_ID;
+      document.head.appendChild(gtagScript);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', CFG.GA4_ID);
+    }
+  })();
+
+  // ── 2. Geometria — ângulo horário a partir do topo (0 = topo/ponteiro) ──
+  function pt(angDeg, r){
+    var a = angDeg * Math.PI/180;
+    return { x: 150 + r*Math.sin(a), y: 150 - r*Math.cos(a) };
+  }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];}); }
+
+  // Parâmetros do desenho
+  var R_DISC = 149;   // raio externo (aro metálico)
+  var R_SEG  = 126;   // raio dos gomos (aro = 126..149)
+  var R_BULB = 137.5; // raio das bolinhas (no meio do aro)
+  var N_BULB = 16;    // qtd de bolinhas
+  var R_OUT  = 121;   // ponta externa dos rótulos (colada na borda, p/ todos)
+  var SPAN   = 61.2;  // largura radial máx. de um rótulo (uniformiza a fonte)
+  var BASE   = 11.7;  // fonte base (rótulos) — 10% menor que antes
+  var FS_MIN = 6.5;   // fonte mínima (abaixo disso, rótulo é truncado em vez de espremido)
+
+  function drawWheel(){
+    var svg = document.getElementById('wheel'), parts = '';
+
+    // defs (gradientes metálicos)
+    parts +=
+      '<defs>'+
+        '<linearGradient id="gGold" x1="0.15" y1="0" x2="0.85" y2="1">'+
+          '<stop offset="0" stop-color="#F6DC6A"/><stop offset="0.5" stop-color="#D4AF37"/><stop offset="1" stop-color="#8E6E1B"/>'+
+        '</linearGradient>'+
+        '<linearGradient id="gDark" x1="0.15" y1="0" x2="0.85" y2="1">'+
+          '<stop offset="0" stop-color="#3F3C95"/><stop offset="0.5" stop-color="#2F2C79"/><stop offset="1" stop-color="#181650"/>'+
+        '</linearGradient>'+
+        '<radialGradient id="gRim" cx="0.5" cy="0.38" r="0.62">'+
+          '<stop offset="0" stop-color="#8a6b22"/><stop offset="0.5" stop-color="#3c2d12"/><stop offset="1" stop-color="#151007"/>'+
+        '</radialGradient>'+
+        '<radialGradient id="gBulb" cx="0.4" cy="0.35" r="0.75">'+
+          '<stop offset="0" stop-color="#FFFBE8"/><stop offset="0.45" stop-color="#F4D85C"/><stop offset="1" stop-color="#9C7A1E"/>'+
+        '</radialGradient>'+
+      '</defs>';
+
+    // aro metálico
+    parts += '<circle cx="150" cy="150" r="'+R_DISC+'" fill="url(#gRim)"/>';
+
+    // gomos
+    for (var i=0;i<N;i++){
+      var a0=i*SEG, a1=(i+1)*SEG;
+      var p0=pt(a0,R_SEG), p1=pt(a1,R_SEG);
+      var fillSeg = (i%2===0) ? 'url(#gGold)' : 'url(#gDark)';
+      parts += '<path d="M150,150 L'+p0.x.toFixed(2)+','+p0.y.toFixed(2)+
+               ' A'+R_SEG+','+R_SEG+' 0 0 1 '+p1.x.toFixed(2)+','+p1.y.toFixed(2)+' Z" '+
+               'fill="'+fillSeg+'" stroke="#7a5d18" stroke-width="1"/>';
+    }
+
+    // brilho metálico (sheen) no topo
+    parts += '<ellipse cx="150" cy="104" rx="120" ry="74" fill="#ffffff" opacity="0.07"/>';
+
+    // anel dourado separando gomos do aro
+    parts += '<circle cx="150" cy="150" r="'+R_SEG+'" fill="none" stroke="#C9A33A" stroke-width="2.5"/>';
+
+    // bolinhas (luzes)
+    for (var b=0;b<N_BULB;b++){
+      var bp = pt(b*(360/N_BULB), R_BULB);
+      parts += '<circle cx="'+bp.x.toFixed(2)+'" cy="'+bp.y.toFixed(2)+'" r="6.4" fill="#F4D85C" opacity="0.30"/>'+
+               '<circle cx="'+bp.x.toFixed(2)+'" cy="'+bp.y.toFixed(2)+'" r="3.5" fill="url(#gBulb)" stroke="#6e5417" stroke-width="0.7"/>';
+    }
+
+    // borda externa (fio dourado)
+    parts += '<circle cx="150" cy="150" r="'+(R_DISC-0.8)+'" fill="none" stroke="#caa53d" stroke-width="1.4" opacity="0.7"/>';
+
+    // rótulos — linha única; quebra em 2 linhas (e reduz) o que não couber em SPAN
+    for (var j=0;j<N;j++){
+      var mid = j*SEG + SEG/2, prm = PREMIOS[GOMOS[j]];
+      var lines = wrap(prm.gomoLabel || prm.label), t;
+      var widest = 0; for (t=0;t<lines.length;t++) widest = Math.max(widest, measure(lines[t], 100));
+      var fs = Math.min(BASE, 100 * SPAN / widest);
+      if (lines.length > 1) fs = Math.min(fs, BASE * 0.84); // rótulo quebrado fica menor
+      if (fs < FS_MIN){
+        // rótulo longo demais mesmo após quebrar — trunca em vez de deixar vazar do gomo
+        fs = FS_MIN;
+        lines = lines.map(function(l){ return truncate(l, fs, SPAN); });
+      }
+      var Lw = 0; for (t=0;t<lines.length;t++) Lw = Math.max(Lw, measure(lines[t], fs));
+      var p = pt(mid, R_OUT - Lw/2);                         // ponta externa da linha mais larga em R_OUT
+      var fill = (j%2===0) ? '#2F2C79' : '#F4D85C';          // gomo dourado→navy, escuro→dourado
+      var inner = (lines.length > 1)
+        ? '<tspan x="'+p.x.toFixed(2)+'" dy="-0.56em">'+esc(lines[0])+'</tspan>'+
+          '<tspan x="'+p.x.toFixed(2)+'" dy="1.12em">'+esc(lines[1])+'</tspan>'
+        : esc(lines[0]);
+      parts += '<text x="'+p.x.toFixed(2)+'" y="'+p.y.toFixed(2)+'" '+
+               'fill="'+fill+'" font-family="Poppins,sans-serif" font-weight="700" font-size="'+fs.toFixed(2)+'" '+
+               'letter-spacing="0.2" text-anchor="middle" dominant-baseline="middle" '+
+               'transform="rotate('+mid.toFixed(2)+','+p.x.toFixed(2)+','+p.y.toFixed(2)+')">'+
+               inner+'</text>';
+    }
+
+    svg.innerHTML = parts;
+  }
+
+  // Mede o texto via canvas (confiável; getComputedTextLength às vezes retorna 0).
+  // Largura em "px no tamanho fs" == unidades do viewBox no tamanho fs.
+  var measureCtx = document.createElement('canvas').getContext('2d');
+  function measure(text, fs){ measureCtx.font = '700 '+fs+'px Poppins, sans-serif'; return measureCtx.measureText(text).width || 1; }
+
+  // Quebra em 2 linhas (no espaço central) quando não cabe em 1 linha dentro de SPAN.
+  function wrap(text){
+    if (measure(text, 14) <= SPAN) return [text];   // decisão num tamanho fixo (independe de BASE)
+    var sp = [], idx = text.indexOf(' ');
+    while (idx > -1){ sp.push(idx); idx = text.indexOf(' ', idx+1); }
+    if (!sp.length) return [text];
+    var m = text.length/2, best = sp[0];
+    for (var k=0;k<sp.length;k++) if (Math.abs(sp[k]-m) < Math.abs(best-m)) best = sp[k];
+    return [text.slice(0, best), text.slice(best+1)];
+  }
+
+  // Corta com reticências até caber em maxW no tamanho fs (rede de segurança contra rótulos longos demais).
+  function truncate(text, fs, maxW){
+    if (measure(text, fs) <= maxW) return text;
+    var t = text;
+    while (t.length > 1 && measure(t + '…', fs) > maxW) t = t.slice(0, -1);
+    return t + '…';
+  }
+
+  // ── 3. Sorteio direcionado por peso ──
+  function sortearGomo(){
+    var total = 0, k;
+    for (k in PREMIOS) total += PREMIOS[k].peso;
+    var rnd = Math.random()*total, acc = 0, escolhido = null;
+    for (k in PREMIOS){ acc += PREMIOS[k].peso; if (rnd <= acc){ escolhido = k; break; } }
+    var idxs = []; for (var i=0;i<N;i++) if (GOMOS[i]===escolhido) idxs.push(i);
+    return idxs[Math.floor(Math.random()*idxs.length)];
+  }
+
+  // ── 4. Estado e giro ──
+  var tentativasTotais = CFG.TENTATIVAS || 3;
+  var usadas = 0, girando = false, rotAcc = 0, melhor = null;
+
+  var elWheel = document.getElementById('wheel');
+  var btnSpin = document.getElementById('btn-spin');
+  var elLeft = document.getElementById('left');
+  var overlay = document.getElementById('overlay');
+  var btnAgain = document.getElementById('btn-again');
+  var btnClaim = document.getElementById('btn-claim');
+  var alunaChoice = document.getElementById('aluna-choice');
+  var btnClaimAluna = document.getElementById('btn-claim-aluna');
+  var btnClaimNaoAluna = document.getElementById('btn-claim-naoaluna');
+
+  function restantes(){ return tentativasTotais - usadas; }
+  function chanceTxt(n){ return n + (n === 1 ? ' chance' : ' chances'); }
+
+  function girar(){
+    if (girando || restantes() <= 0) return;
+    girando = true; usadas++;
+    btnSpin.disabled = true;
+    overlay.classList.remove('open');
+
+    var gomo = sortearGomo();
+    var key = GOMOS[gomo], centro = gomo*SEG + SEG/2;
+    var alvo = (360 - (centro % 360)) % 360;
+    var jitter = (Math.random()-0.5) * (SEG*0.5);
+    var voltas = 6;
+    rotAcc += voltas*360 + (alvo - (rotAcc % 360) + 360) % 360 + jitter;
+
+    elWheel.classList.remove('no-anim');
+    elWheel.style.transform = 'rotate(' + rotAcc + 'deg)';
+
+    track('SpinWheel', { tentativa: usadas });
+
+    setTimeout(function(){
+      girando = false;
+      if (!melhor || PREMIOS[key].rank > PREMIOS[melhor.key].rank){
+        melhor = { key:key, gomo:gomo };
+      }
+      mostrarResultado();
+    }, 5300);
+  }
+
+  function mostrarResultado(){
+    var prm = PREMIOS[melhor.key];
+    document.getElementById('win-label').textContent = prm.label;
+
+    if (prm.checkoutAluna || prm.checkoutNaoAluna){
+      btnClaim.hidden = true;
+      alunaChoice.hidden = false;
+      btnClaimAluna.href = montarDestino(prm.checkoutAluna);
+      btnClaimNaoAluna.href = montarDestino(prm.checkoutNaoAluna);
+    } else {
+      alunaChoice.hidden = true;
+      btnClaim.hidden = false;
+      btnClaim.href = montarDestino(prm.checkout);
+    }
+
+    elLeft.textContent = restantes();
+    btnSpin.disabled = restantes() <= 0;
+
+    if (restantes() > 0){
+      btnAgain.hidden = false;
+      document.getElementById('again-left').textContent = restantes();
+    } else {
+      btnAgain.hidden = true;
+    }
+    document.getElementById('chances-txt').textContent =
+      restantes() > 0 ? ('Você ainda tem ' + chanceTxt(restantes()) + '.') : 'Tentativas encerradas.';
+    overlay.classList.add('open');
+    track('SpinResult', { premio: melhor.key, label: prm.label });
+  }
+
+  // ── 5. Destino: mantém o sck do prêmio e repassa só os UTMs do anúncio ──
+  function montarDestino(base){
+    if (!base) return '#';
+    var inc = new URLSearchParams(window.location.search);
+    inc.delete('sck'); inc.delete('src');
+    var extra = inc.toString();
+    if (!extra) return base;
+    return base + (base.indexOf('?') >= 0 ? '&' : '?') + extra;
+  }
+
+  // ── 6. Eventos ──
+  btnSpin.addEventListener('click', girar);
+  btnAgain.addEventListener('click', function(){ overlay.classList.remove('open'); girar(); });
+  btnClaim.addEventListener('click', function(e){
+    if (btnClaim.getAttribute('href') === '#'){ e.preventDefault(); return; }
+    track('ClaimPrize', { premio: melhor.key });
+  });
+  btnClaimAluna.addEventListener('click', function(e){
+    if (btnClaimAluna.getAttribute('href') === '#'){ e.preventDefault(); return; }
+    track('ClaimPrize', { premio: melhor.key, aluna: true });
+  });
+  btnClaimNaoAluna.addEventListener('click', function(e){
+    if (btnClaimNaoAluna.getAttribute('href') === '#'){ e.preventDefault(); return; }
+    track('ClaimPrize', { premio: melhor.key, aluna: false });
+  });
+
+  // ── init ──
+  drawWheel();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawWheel); // remede com a fonte carregada
+  elLeft.textContent = restantes();
+  document.getElementById('chances-txt').textContent = 'Você tem ' + chanceTxt(restantes()) + '. Gire agora.';
+})();
+</script>
+</body>
+</html>
